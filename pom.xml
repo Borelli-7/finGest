@@ -33,6 +33,7 @@
 	</scm>
 	<properties>
 		<spring-boot.version>3.4.1</spring-boot.version>
+		<sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
@@ -101,6 +102,14 @@
 
 	<build>
 		<plugins>
+			
+		    
+			<plugin>
+			    <groupId>org.sonarsource.scanner.maven</groupId>
+			    <artifactId>sonar-maven-plugin</artifactId>
+			    <version>${sonar-maven-plugin.version}</version> <!-- Specify the version here -->
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
