@@ -32,10 +32,38 @@
 		<url/>
 	</scm>
 	<properties>
-		<spring-boot.version>3.4.1</spring-boot.version>
-		<sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
+		<!--java configuration -->
 		<java.version>21</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<spring-boot.version>3.4.1</spring-boot.version>
+
+
+		<!-- SonarQube Configuration -->
+		<sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
+		<sonar.host.url>http://localhost:9000</sonar.host.url>
+		<sonar.token>sqp_cad03905759d1e584a37e88cce7763803f6f7ebd</sonar.token>
+		<sonar.projectKey>finGest</sonar.projectKey>
+		<sonar.projectName>'finGest'</sonar.projectName>
+		<sonar.projectVersion>0.0.1-SNAPSHOT</sonar.projectVersion>
+		<sonar.sources>src/main/java</sonar.sources>
+		<sonar.tests>src/test/java</sonar.tests>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.jacoco.reportPaths>target/jacoco.exec</sonar.jacoco.reportPaths>
+
+<!--		<sonar.host.url>${env.SONAR_HOST_URL}</sonar.host.url>-->
+<!--		<sonar.login>${env.SONAR_LOGIN}</sonar.login>-->
+<!--		<sonar.projectKey>${env.SONAR_PROJECT_KEY}</sonar.projectKey>-->
+<!--		<sonar.projectName>${env.SONAR_PROJECT_NAME}</sonar.projectName>-->
+<!--		<sonar.projectVersion>${env.SONAR_PROJECT_VERSION}</sonar.projectVersion>-->
+<!--		<sonar.sources>${env.SONAR_SOURCES}</sonar.sources>-->
+<!--		<sonar.tests>${env.SONAR_TESTS}</sonar.tests>-->
+<!--		<sonar.java.coveragePlugin>${env.SONAR_COVERAGE_PLUGIN}</sonar.java.coveragePlugin>-->
+<!--		<sonar.jacoco.reportPaths>${env.SONAR_JACOCO_REPORT_PATHS}</sonar.jacoco.reportPaths>-->
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -98,12 +126,45 @@
 			<artifactId>spring-integration-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.github.cdimascio</groupId>
+			<artifactId>dotenv-java</artifactId>
+			<version>3.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
+
 		<plugins>
-			
-		    
+
+			<!-- JaCoCo Plugin -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.10</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Surefire Plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.1.2</version>
+			</plugin>
+
 			<plugin>
 			    <groupId>org.sonarsource.scanner.maven</groupId>
 			    <artifactId>sonar-maven-plugin</artifactId>
@@ -122,6 +183,7 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.hibernate.orm.tooling</groupId>
 				<artifactId>hibernate-enhance-maven-plugin</artifactId>
@@ -140,10 +202,12 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.graalvm.buildtools</groupId>
 				<artifactId>native-maven-plugin</artifactId>
 			</plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -157,7 +221,28 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
 		</plugins>
 	</build>
+
+<!--	<profiles>-->
+<!--		<profile>-->
+<!--			<id>load-env</id>-->
+<!--			<activation>-->
+<!--				<activeByDefault>true</activeByDefault>-->
+<!--			</activation>-->
+<!--			<properties>-->
+<!--				<sonar.host.url>${env.SONAR_HOST_URL}</sonar.host.url>-->
+<!--				<sonar.login>${env.SONAR_LOGIN}</sonar.login>-->
+<!--				<sonar.projectKey>${env.SONAR_PROJECT_KEY}</sonar.projectKey>-->
+<!--				<sonar.projectName>${env.SONAR_PROJECT_NAME}</sonar.projectName>-->
+<!--				<sonar.projectVersion>${env.SONAR_PROJECT_VERSION}</sonar.projectVersion>-->
+<!--				<sonar.sources>${env.SONAR_SOURCES}</sonar.sources>-->
+<!--				<sonar.tests>${env.SONAR_TESTS}</sonar.tests>-->
+<!--				<sonar.java.coveragePlugin>${env.SONAR_COVERAGE_PLUGIN}</sonar.java.coveragePlugin>-->
+<!--				<sonar.jacoco.reportPaths>${env.SONAR_JACOCO_REPORT_PATHS}</sonar.jacoco.reportPaths>-->
+<!--			</properties>-->
+<!--		</profile>-->
+<!--	</profiles>-->
 
 </project>
