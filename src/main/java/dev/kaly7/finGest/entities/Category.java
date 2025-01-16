@@ -11,7 +11,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "CATEGORY")
+@Table(name = "category")
 @EqualsAndHashCode
 @IdClass(Category.CategoryPK.class)
 public class Category {
