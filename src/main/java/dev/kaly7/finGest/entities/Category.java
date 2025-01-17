@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 @NoArgsConstructor
@@ -55,4 +56,10 @@ public class Category {
         this.name = Objects.requireNonNull(name, "Name must not be null");
         this.profit = Objects.requireNonNull(profit, "Profit must not be null");
     }
+
+    @OneToMany(mappedBy = "category")
+    private List<Expense> expenses;
+
+    @OneToMany(mappedBy = "category")
+    private List<Budget> budgets;
 }

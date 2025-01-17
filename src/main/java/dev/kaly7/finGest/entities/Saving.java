@@ -45,4 +45,7 @@ public class Saving implements Serializable {
     @Column(name = "start_date")
     private LocalDate start;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    private User user;
+
 }

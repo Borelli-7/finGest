@@ -10,7 +10,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "budget")
+@Table(name = "BUDGET")
 public class Budget implements Serializable {
 
     @Id
@@ -24,6 +24,9 @@ public class Budget implements Serializable {
             @JoinColumn(name = "category_profit", referencedColumnName = "profit", nullable = false)
     })
     private Category category;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private User user;
 
     @Embedded
     @NonNull

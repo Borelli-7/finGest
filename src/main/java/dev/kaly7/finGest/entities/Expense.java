@@ -35,6 +35,9 @@ public class Expense {
     })
     private Category category;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Wallet wallet;
+
     /**
      * Overrides toString for better logging and debugging.
      */

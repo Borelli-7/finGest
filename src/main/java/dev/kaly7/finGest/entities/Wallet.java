@@ -28,16 +28,19 @@ public class Wallet {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "expenses")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "wallet")
     private List<Expense> expenses;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    private User user;
+
     @Builder
-    public Wallet(Integer id, Money amount, String name, List<Expense> expenses) {
+    public Wallet(Integer id, Money amount, String name, List<Expense> expenses, User user) {
         this.id = id;
         this.amount = amount;
         this.name = name;
         // Make sure the list is non-null and immutable
         this.expenses = expenses == null ? List.of() : List.copyOf(expenses);
+        this.user = user;
     }
 }

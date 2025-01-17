@@ -9,9 +9,8 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @EqualsAndHashCode
-@Getter
 @ToString
 @StartDateBeforeEndDate
 public class DateRange {
@@ -55,4 +54,13 @@ public class DateRange {
     private static LocalDate defaultIfEmpty(String date, LocalDate defaultValue) {
         return (date == null || date.isBlank()) ? defaultValue : LocalDate.parse(date);
     }
+
+    public LocalDate getStart() {
+        return start;
+    }
+
+    public LocalDate getEnd() {
+        return end;
+    }
+
 }
