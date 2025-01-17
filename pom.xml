@@ -40,6 +40,10 @@
 
 		<spring-boot.version>3.4.1</spring-boot.version>
 
+		<!-- Other Configuration -->
+		<lombok.version>1.18.36</lombok.version>
+		<postgresql.version>42.7.4</postgresql.version>
+
 
 		<!-- SonarQube Configuration -->
 		<sonar-maven-plugin.version>5.0.0.4389</sonar-maven-plugin.version>
@@ -109,12 +113,14 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>${postgresql.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<optional>true</optional>
+			<version>${lombok.version}</version>
+<!--			<optional>true</optional>-->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -166,7 +172,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.1.2</version>
+				<version>3.5.2</version>
 			</plugin>
 
 			<plugin>
