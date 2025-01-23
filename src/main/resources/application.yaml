@@ -6,7 +6,7 @@ spring:
   ### Postgresql database properties
   ## Database configuration
   datasource:
-    url: jdbc:postgresql://localhost:5432/fingestdb
+    url: jdbc:postgresql://localhost:5433/fingestdb
     username: myuser
     password: secret
     driver-class-name: org.postgresql.Driver
