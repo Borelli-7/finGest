@@ -1,4 +1,4 @@
-package dev.kaly7.finGest.entities;
+package dev.kaly7.fingest.entities;
 
 import jakarta.persistence.*;
 import lombok.Builder;

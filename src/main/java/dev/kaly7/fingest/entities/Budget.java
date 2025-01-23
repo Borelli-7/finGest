@@ -1,6 +1,6 @@
-package dev.kaly7.finGest.entities;
+package dev.kaly7.fingest.entities;
 
-import dev.kaly7.finGest.entities.money.Money;
+import dev.kaly7.fingest.entities.money.Money;
 import jakarta.persistence.*;
 import lombok.*;
 import java.io.Serializable;

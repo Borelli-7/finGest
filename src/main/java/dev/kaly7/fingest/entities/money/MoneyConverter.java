@@ -1,4 +1,4 @@
-package dev.kaly7.finGest.entities.money;
+package dev.kaly7.fingest.entities.money;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -1,6 +1,6 @@
-package dev.kaly7.finGest.db.repositories;
+package dev.kaly7.fingest.db.repositories;
 
-import dev.kaly7.finGest.entities.Expense;
+import dev.kaly7.fingest.entities.Expense;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

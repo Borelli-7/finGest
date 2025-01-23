@@ -1,4 +1,4 @@
-package dev.kaly7.finGest.entities.money;
+package dev.kaly7.fingest.entities.money;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

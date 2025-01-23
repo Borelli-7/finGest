@@ -1,8 +1,8 @@
-package dev.kaly7.finGest.entities;
+package dev.kaly7.fingest.entities;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import dev.kaly7.finGest.common.validation.StartDateBeforeEndDate;
+import dev.kaly7.fingest.common.validation.StartDateBeforeEndDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;

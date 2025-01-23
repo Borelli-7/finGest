@@ -1,6 +1,6 @@
-package dev.kaly7.finGest.common.validation;
+package dev.kaly7.fingest.common.validation;
 
-import dev.kaly7.finGest.entities.DateRange;
+import dev.kaly7.fingest.entities.DateRange;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import jakarta.validation.ConstraintValidator;
@@ -24,7 +24,7 @@ public @interface StartDateBeforeEndDate {
 
         @Override
         public void initialize(StartDateBeforeEndDate startDateBeforeEndDate) {
-
+            // can be used to initialize the validator
         }
 
         @Override

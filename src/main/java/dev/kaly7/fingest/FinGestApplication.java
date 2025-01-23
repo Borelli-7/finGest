@@ -1,11 +1,11 @@
-package dev.kaly7.finGest;
+package dev.kaly7.fingest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @SpringBootApplication
-@EntityScan(basePackages = "dev.kaly7.finGest.entities")
+@EntityScan(basePackages = "dev.kaly7.fingest.entities")
 public class FinGestApplication {
 
 	public static void main(String[] args) {
