@@ -13,3 +13,4 @@ public record UserDto(String login, String firstName, String lastName, boolean a
         );
     }
 }
+

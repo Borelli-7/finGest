@@ -1,10 +1,7 @@
 package dev.kaly7.fingest.entities;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -15,6 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "account")
 public class User {
+    @Getter
     @Id
     @Column(name = "login")
     private String login;
