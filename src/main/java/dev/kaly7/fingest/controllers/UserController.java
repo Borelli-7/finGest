@@ -1,6 +1,7 @@
 package dev.kaly7.fingest.controllers;
 
 import dev.kaly7.fingest.dto.UserDto;
+import dev.kaly7.fingest.dto.WalletDto;
 import dev.kaly7.fingest.services.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,5 +34,12 @@ public class UserController {
         userService.updateUser(login, field, value);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping(value = "/{login}/wallets", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<WalletDto>> getWallets(@PathVariable String login) {
+        var wallets = userService.getWallets(login);
+        return ResponseEntity.ok(wallets);
+    }
+
 
 }
