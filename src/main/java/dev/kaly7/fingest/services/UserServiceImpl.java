@@ -80,6 +80,21 @@ public class UserServiceImpl implements UserService {
             throw new UserNotFoundException(login);
     }
 
+    @Override
+    public Integer addWallet(String login, WalletDto walletDto) {
+
+        return Optional.ofNullable(login)
+                .flatMap(this::getUser)
+                .map(user -> {
+                    var wallet = walletDto.toWallet();
+                    var id = walletRepo.save(wallet).getId();
+                    user.getWallets().add(wallet);
+                    userRepo.save(user);
+                    return id;
+                })
+                .orElseThrow(() -> new UserNotFoundException(login));
+    }
+
 
     private Optional<User> getUser(String login) {
         return Optional.ofNullable(Optional.ofNullable(login)
