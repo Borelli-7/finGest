@@ -67,18 +67,18 @@ public class UserController {
         return ResponseEntity.created(URI.create(locationLink)).body(resource);
     }
 
-//    @GetMapping(value = "/{login}/wallets/{id}/summary", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<SummaryDto> getSummary(
-//            @PathVariable String login,
-//            @PathVariable Integer id,
-//            @RequestParam(name = "start", required = false) String start,
-//            @RequestParam(name = "end", required = false) String end) {
-//
-//        var dateRange = new DateRange(start, end);
-//        var summary = userService.getSummary(login, id, dateRange);
-//
-//        return ResponseEntity.ok(summary);
-//    }
+    @GetMapping(value = "/{login}/wallets/{id}/summary", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SummaryDto> getSummary(
+            @PathVariable String login,
+            @PathVariable Integer id,
+            @RequestParam(name = "start", required = false) String start,
+            @RequestParam(name = "end", required = false) String end) {
+
+        var dateRange = new DateRange(start, end);
+        var summary = userService.getSummary(login, id, dateRange);
+
+        return ResponseEntity.ok(summary);
+    }
 
 
 }

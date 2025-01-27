@@ -1,7 +1,9 @@
 package dev.kaly7.fingest.services;
 
+import dev.kaly7.fingest.dto.SummaryDto;
 import dev.kaly7.fingest.dto.UserDto;
 import dev.kaly7.fingest.dto.WalletDto;
+import dev.kaly7.fingest.entities.DateRange;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -16,4 +18,6 @@ public interface UserService {
     List<WalletDto> getWallets(String login);
 
     Integer addWallet(String login, @Valid WalletDto walletDto);
+
+    SummaryDto getSummary(String login, Integer id, DateRange dateRange);
 }

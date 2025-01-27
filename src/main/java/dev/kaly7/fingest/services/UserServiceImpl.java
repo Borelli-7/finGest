@@ -1,11 +1,16 @@
 package dev.kaly7.fingest.services;
 
+import dev.kaly7.fingest.common.validation.Predicates;
 import dev.kaly7.fingest.db.repositories.UserRepo;
 import dev.kaly7.fingest.db.repositories.WalletRepo;
+import dev.kaly7.fingest.dto.SummaryDto;
 import dev.kaly7.fingest.dto.UserDto;
 import dev.kaly7.fingest.dto.WalletDto;
+import dev.kaly7.fingest.entities.DateRange;
+import dev.kaly7.fingest.entities.Expense;
 import dev.kaly7.fingest.entities.Wallet;
 import dev.kaly7.fingest.entities.money.Money;
+import dev.kaly7.fingest.exceptions.WalletNotFoundException;
 import org.apache.commons.beanutils.PropertyUtils;
 import dev.kaly7.fingest.entities.User;
 import dev.kaly7.fingest.exceptions.UpdateFieldException;
@@ -13,11 +18,11 @@ import dev.kaly7.fingest.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.partitioningBy;
+import static java.util.stream.Collectors.reducing;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -95,6 +100,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException(login));
     }
 
+    @Override
+    public SummaryDto getSummary(String login, Integer id, DateRange dateRange) {
+        return calculateSummary(getExpenses(login, id, dateRange));
+    }
+
 
     private Optional<User> getUser(String login) {
         return Optional.ofNullable(Optional.ofNullable(login)
@@ -112,6 +122,57 @@ public class UserServiceImpl implements UserService {
 
         return new WalletDto(0, totalAmount, SUMMARY_WALLET_NAME);
 
+    }
+
+    private List<Expense> getAllExpenses(User user, DateRange dateRange) {
+
+        return Optional.ofNullable(user)
+                .stream()
+                .flatMap(u -> u.getWallets().stream())
+                .map(Wallet::getExpenses)
+                .flatMap(Collection::stream)
+                .filter(Predicates.isIn(dateRange))
+                .toList();
+    }
+
+    private List<Expense> getExpensesFromWallet(User user, Integer id, DateRange dateRange) {
+        return Optional.ofNullable(getWallet(id, user))
+                .map(Wallet::getExpenses)
+                .stream()
+                .flatMap(List::stream)
+                .filter(Predicates.isIn(dateRange))
+                .toList();
+    }
+
+    private Wallet getWallet(Integer id, User user) {
+        return user.getWallets()
+                .stream()
+                .filter(wallet -> Objects.equals(wallet.getId(), id))
+                .findFirst()
+                .orElseThrow(() -> new WalletNotFoundException(id));
+    }
+
+    public List<Expense> getExpenses(String login, Integer id, DateRange dateRange) {
+
+        return Optional.of(getUser(login).get())
+                .map(user -> switch (id) {
+                    case 0 -> getAllExpenses(user, dateRange);
+                    default -> getExpensesFromWallet(user, id, dateRange);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("User not found for login: " + login));
+    }
+
+    private SummaryDto calculateSummary(List<Expense> expenses) {
+        Map<Boolean, Money> groupedSums = expenses.stream()
+                .collect(partitioningBy(
+                        expense -> expense.getCategory().getProfit(),
+                        reducing(Money.ZERO, Expense::getAmount, Money::add)
+                ));
+
+        Money inflow = groupedSums.getOrDefault(true, Money.ZERO);
+        Money outflow = groupedSums.getOrDefault(false, Money.ZERO);
+
+        return new SummaryDto(inflow, outflow);
     }
 
 
