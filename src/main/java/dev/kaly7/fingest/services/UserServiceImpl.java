@@ -105,6 +105,17 @@ public class UserServiceImpl implements UserService {
         return calculateSummary(getExpenses(login, id, dateRange));
     }
 
+    @Override
+    public List<Expense> getExpenses(String login, Integer id, DateRange dateRange) {
+
+        return Optional.of(getUser(login).get())
+                .map(user -> switch (id) {
+                    case 0 -> getAllExpenses(user, dateRange);
+                    default -> getExpensesFromWallet(user, id, dateRange);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("User not found for login: " + login));
+    }
+
 
     private Optional<User> getUser(String login) {
         return Optional.ofNullable(Optional.ofNullable(login)
@@ -150,16 +161,6 @@ public class UserServiceImpl implements UserService {
                 .filter(wallet -> Objects.equals(wallet.getId(), id))
                 .findFirst()
                 .orElseThrow(() -> new WalletNotFoundException(id));
-    }
-
-    public List<Expense> getExpenses(String login, Integer id, DateRange dateRange) {
-
-        return Optional.of(getUser(login).get())
-                .map(user -> switch (id) {
-                    case 0 -> getAllExpenses(user, dateRange);
-                    default -> getExpensesFromWallet(user, id, dateRange);
-                })
-                .orElseThrow(() -> new IllegalArgumentException("User not found for login: " + login));
     }
 
     private SummaryDto calculateSummary(List<Expense> expenses) {

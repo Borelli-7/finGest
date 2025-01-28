@@ -4,8 +4,10 @@ import dev.kaly7.fingest.dto.SummaryDto;
 import dev.kaly7.fingest.dto.UserDto;
 import dev.kaly7.fingest.dto.WalletDto;
 import dev.kaly7.fingest.entities.DateRange;
+import dev.kaly7.fingest.entities.Expense;
 import dev.kaly7.fingest.services.UserService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -45,7 +48,7 @@ public class UserController {
 
     @GetMapping(value = "/{login}/wallets", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<WalletDto>> getWallets(@PathVariable String login) {
-        var wallets = userService.getWallets(login);
+        final var wallets = userService.getWallets(login);
 
         return ResponseEntity.ok(wallets);
     }
@@ -63,7 +66,7 @@ public class UserController {
         );
 
         // Return response with the Location header and `_links` in the body
-        String locationLink = linkTo(methodOn(this.getClass()).getSummary(login, id, null, null)).toUri().toString();
+        final var locationLink = linkTo(methodOn(this.getClass()).getSummary(login, id, null, null)).toUri().toString();
         return ResponseEntity.created(URI.create(locationLink)).body(resource);
     }
 
@@ -74,11 +77,25 @@ public class UserController {
             @RequestParam(name = "start", required = false) String start,
             @RequestParam(name = "end", required = false) String end) {
 
-        var dateRange = new DateRange(start, end);
-        var summary = userService.getSummary(login, id, dateRange);
+        final var dateRange = new DateRange(start, end);
+        final var summary = userService.getSummary(login, id, dateRange);
 
         return ResponseEntity.ok(summary);
     }
+
+    @GetMapping(value = "/{login}/wallets/{id}/expenses", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Expense>> getExpenses(
+            @PathVariable String login,
+            @PathVariable Integer id,
+            @RequestParam(name = "start", required = false) String start,
+            @RequestParam(name = "end", required = false) String end) {
+
+        final var dateRange = new DateRange(start, end);
+        List<Expense> expenses = userService.getExpenses(login, id, dateRange);
+
+        return ResponseEntity.ok(expenses);
+    }
+
 
 
 }
