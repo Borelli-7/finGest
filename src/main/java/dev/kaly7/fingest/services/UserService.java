@@ -27,5 +27,5 @@ public interface UserService {
 
     Expense getHighestExpense(String login, Integer id, DateRange dateRange);
 
-    Integer addExpense(String login, Integer id, @Valid ExpenseInputDto expense);
+    Integer addExpense(String login, Integer id, @Valid ExpenseInputDto expenseInputDto);
 }

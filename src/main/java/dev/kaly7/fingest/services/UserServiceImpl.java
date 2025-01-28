@@ -1,6 +1,7 @@
 package dev.kaly7.fingest.services;
 
 import dev.kaly7.fingest.common.validation.Predicates;
+import dev.kaly7.fingest.db.repositories.ExpenseRepo;
 import dev.kaly7.fingest.db.repositories.UserRepo;
 import dev.kaly7.fingest.db.repositories.WalletRepo;
 import dev.kaly7.fingest.dto.ExpenseInputDto;
@@ -19,6 +20,7 @@ import dev.kaly7.fingest.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -32,10 +34,12 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo;
     private final WalletRepo walletRepo;
+    private final ExpenseRepo expenseRepo;
 
-    public UserServiceImpl(UserRepo userRepo, WalletRepo walletRepo) {
+    public UserServiceImpl(UserRepo userRepo, WalletRepo walletRepo, ExpenseRepo expenseRepo) {
         this.userRepo = userRepo;
         this.walletRepo = walletRepo;
+        this.expenseRepo = expenseRepo;
     }
 
     @Override
@@ -128,8 +132,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Integer addExpense(String login, Integer id, ExpenseInputDto expense) {
-        return 0;
+    public Integer addExpense(String login, Integer id, ExpenseInputDto expenseInputDto) {
+
+        return getUser(login)
+                            .map(user -> getWallet(id, user))
+                            .map(wallet -> {
+                                final var expense = expenseInputDto.toExpense();
+                                expense.setDate(LocalDate.now());
+                                final var expenseId = expenseRepo.save(expense).getId();
+
+                                wallet.getExpenses().add(expense);
+                                wallet.setAmount(getNewAmountAfterAdd(expenseInputDto, wallet));
+                                walletRepo.save(wallet);
+
+                                return expenseId;
+                            })
+                            .orElseThrow(() -> new UserNotFoundException("User not found with login: " + login));
+    }
+
+    private Money getNewAmountAfterAdd(ExpenseInputDto expenseInputDto, Wallet wallet) {
+        final var toAdd = expenseInputDto.amount();
+        final var current = wallet.getAmount();
+
+        return expenseInputDto.category().getProfit()
+                ? current.add(toAdd)
+                : current.subtract(toAdd);
     }
 
 
