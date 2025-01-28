@@ -96,6 +96,18 @@ public class UserController {
         return ResponseEntity.ok(expenses);
     }
 
+    @GetMapping(value = "/{login}/wallets/{id}/highest-expense", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Expense> getHighestExpense(
+            @PathVariable String login,
+            @PathVariable Integer id,
+            @RequestParam(name = "start", required = false) String start,
+            @RequestParam(name = "end", required = false) String end) {
+
+        final var dateRange = new DateRange(start, end);
+        final var highestExpense = userService.getHighestExpense(login, id, dateRange);
+
+        return ResponseEntity.ok(highestExpense);
+    }
 
 
 }

@@ -27,7 +27,7 @@ import static java.util.stream.Collectors.reducing;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final static String SUMMARY_WALLET_NAME = "summary";
+    private static final String SUMMARY_WALLET_NAME = "summary";
 
     private final UserRepo userRepo;
     private final WalletRepo walletRepo;
@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public final List<UserDto> getUsers() {
+    public List<UserDto> getUsers() {
         return userRepo.findAll()
                         .stream()
                         .map(UserDto::fromUser)
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public final List<WalletDto> getWallets(String login) {
+    public List<WalletDto> getWallets(String login) {
         final var user = getUser(login);
 
         if (user.isPresent())
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public final Integer addWallet(String login, WalletDto walletDto) {
+    public Integer addWallet(String login, WalletDto walletDto) {
 
         return Optional.ofNullable(login)
                 .flatMap(this::getUser)
@@ -101,12 +101,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public final SummaryDto getSummary(String login, Integer id, DateRange dateRange) {
+    public SummaryDto getSummary(String login, Integer id, DateRange dateRange) {
         return calculateSummary(getExpenses(login, id, dateRange));
     }
 
     @Override
-    public final List<Expense> getExpenses(String login, Integer id, DateRange dateRange) {
+    public List<Expense> getExpenses(String login, Integer id, DateRange dateRange) {
 
         return Optional.of(getUser(login).get())
                 .map(user -> switch (id) {
@@ -114,6 +114,16 @@ public class UserServiceImpl implements UserService {
                     default -> getExpensesFromWallet(user, id, dateRange);
                 })
                 .orElseThrow(() -> new IllegalArgumentException("User not found for login: " + login));
+    }
+
+    @Override
+    public Expense getHighestExpense(String login, Integer id, DateRange dateRange) {
+
+        return getExpenses(login, id, dateRange)
+                .stream()
+                .filter(Predicates.IS_NOT_PROFIT)
+                .max(Comparator.comparing(Expense::getAmount))
+                .orElseThrow(() -> new IllegalArgumentException("No expenses found for user: " + login));
     }
 
 

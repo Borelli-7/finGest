@@ -23,4 +23,6 @@ public interface UserService {
     SummaryDto getSummary(String login, Integer id, DateRange dateRange);
 
     List<Expense> getExpenses(String login, Integer id, DateRange dateRange);
+
+    Expense getHighestExpense(String login, Integer id, DateRange dateRange);
 }

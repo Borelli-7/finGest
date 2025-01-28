@@ -12,7 +12,7 @@ public class Predicates {
 
     // Functional and reusable predicates
     static final Predicate<Expense> IS_PROFIT = expense -> expense.getCategory().getProfit();
-    static final Predicate<Expense> IS_NOT_PROFIT = IS_PROFIT.negate();
+    public static final Predicate<Expense> IS_NOT_PROFIT = IS_PROFIT.negate();
     static final Predicate<Expense> IS_NOT_TRANSFER = expense ->
             !TRANSFER_CATEGORY.equalsIgnoreCase(expense.getCategory().getName());
     static final Predicate<Expense> IS_ELIGIBLE_EXPENSE = IS_NOT_TRANSFER.and(IS_NOT_PROFIT);
