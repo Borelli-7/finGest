@@ -1,5 +1,6 @@
 package dev.kaly7.fingest.services;
 
+import dev.kaly7.fingest.dto.ExpenseInputDto;
 import dev.kaly7.fingest.dto.SummaryDto;
 import dev.kaly7.fingest.dto.UserDto;
 import dev.kaly7.fingest.dto.WalletDto;
@@ -25,4 +26,6 @@ public interface UserService {
     List<Expense> getExpenses(String login, Integer id, DateRange dateRange);
 
     Expense getHighestExpense(String login, Integer id, DateRange dateRange);
+
+    Integer addExpense(String login, Integer id, @Valid ExpenseInputDto expense);
 }

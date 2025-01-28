@@ -3,6 +3,7 @@ package dev.kaly7.fingest.services;
 import dev.kaly7.fingest.common.validation.Predicates;
 import dev.kaly7.fingest.db.repositories.UserRepo;
 import dev.kaly7.fingest.db.repositories.WalletRepo;
+import dev.kaly7.fingest.dto.ExpenseInputDto;
 import dev.kaly7.fingest.dto.SummaryDto;
 import dev.kaly7.fingest.dto.UserDto;
 import dev.kaly7.fingest.dto.WalletDto;
@@ -124,6 +125,11 @@ public class UserServiceImpl implements UserService {
                 .filter(Predicates.IS_NOT_PROFIT)
                 .max(Comparator.comparing(Expense::getAmount))
                 .orElseThrow(() -> new IllegalArgumentException("No expenses found for user: " + login));
+    }
+
+    @Override
+    public Integer addExpense(String login, Integer id, ExpenseInputDto expense) {
+        return 0;
     }
 
 

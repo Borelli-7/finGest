@@ -1,5 +1,6 @@
 package dev.kaly7.fingest.controllers;
 
+import dev.kaly7.fingest.dto.ExpenseInputDto;
 import dev.kaly7.fingest.dto.SummaryDto;
 import dev.kaly7.fingest.dto.UserDto;
 import dev.kaly7.fingest.dto.WalletDto;
@@ -12,8 +13,10 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -107,6 +110,36 @@ public class UserController {
         final var highestExpense = userService.getHighestExpense(login, id, dateRange);
 
         return ResponseEntity.ok(highestExpense);
+    }
+
+    @PostMapping(value = "/{login}/wallets/{id}/expenses", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<EntityModel<Map<String, Object>>> createExpense(
+            @PathVariable String login,
+            @PathVariable Integer id,
+            @RequestBody @Valid ExpenseInputDto expense) {
+
+        final var expenseId = userService.addExpense(login, id, expense);
+
+        // Generate the URI for the created resource
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{expenseId}")
+                .buildAndExpand(expenseId)
+                .toUri();
+
+        // Prepare response body with the expense ID
+        final var responseBody = new LinkedHashMap<>();
+        responseBody.put("expenseId", expenseId);
+
+        // Create links for hypermedia support
+        EntityModel<Map<String, Object>> resource = EntityModel.of(responseBody,
+                linkTo(methodOn(this.getClass()).createExpense(login, id, expense)).withSelfRel(),
+                linkTo(methodOn(this.getClass()).getExpenses(login, id, null, null)).withRel("getExpenses"),
+                linkTo(methodOn(this.getClass()).deleteExpense(login, id, expenseId)).withRel("deleteExpense")
+        );
+
+        // Return 201 Created response with the hypermedia-enabled entity
+        return ResponseEntity.created(location).body(resource);
     }
 
 
