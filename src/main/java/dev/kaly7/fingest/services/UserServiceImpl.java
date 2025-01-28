@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getUsers() {
+    public final List<UserDto> getUsers() {
         return userRepo.findAll()
                         .stream()
                         .map(UserDto::fromUser)
@@ -70,8 +70,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<WalletDto> getWallets(String login) {
-        Optional<User> user = getUser(login);
+    public final List<WalletDto> getWallets(String login) {
+        final var user = getUser(login);
 
         if (user.isPresent())
             return Stream.concat(
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Integer addWallet(String login, WalletDto walletDto) {
+    public final Integer addWallet(String login, WalletDto walletDto) {
 
         return Optional.ofNullable(login)
                 .flatMap(this::getUser)
@@ -101,12 +101,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public SummaryDto getSummary(String login, Integer id, DateRange dateRange) {
+    public final SummaryDto getSummary(String login, Integer id, DateRange dateRange) {
         return calculateSummary(getExpenses(login, id, dateRange));
     }
 
     @Override
-    public List<Expense> getExpenses(String login, Integer id, DateRange dateRange) {
+    public final List<Expense> getExpenses(String login, Integer id, DateRange dateRange) {
 
         return Optional.of(getUser(login).get())
                 .map(user -> switch (id) {
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
                         .orElseThrow(() -> new UserNotFoundException(login)));
     }
 
-    private WalletDto getSummaryWallet(Optional<User> user) {
+    private  WalletDto getSummaryWallet(Optional<User> user) {
 
         var totalAmount = Optional.ofNullable(user.get().getWallets())
                 .stream()
@@ -164,14 +164,14 @@ public class UserServiceImpl implements UserService {
     }
 
     private SummaryDto calculateSummary(List<Expense> expenses) {
-        Map<Boolean, Money> groupedSums = expenses.stream()
+       final var groupedSums = expenses.stream()
                 .collect(partitioningBy(
                         expense -> expense.getCategory().getProfit(),
                         reducing(Money.ZERO, Expense::getAmount, Money::add)
                 ));
 
-        Money inflow = groupedSums.getOrDefault(true, Money.ZERO);
-        Money outflow = groupedSums.getOrDefault(false, Money.ZERO);
+       final var inflow = groupedSums.getOrDefault(true, Money.ZERO);
+       final var outflow = groupedSums.getOrDefault(false, Money.ZERO);
 
         return new SummaryDto(inflow, outflow);
     }

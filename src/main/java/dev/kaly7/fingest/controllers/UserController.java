@@ -55,10 +55,10 @@ public class UserController {
 
     @PostMapping(value = "/{login}/wallets", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EntityModel<Integer>> createWallet(@PathVariable String login, @RequestBody @Valid WalletDto walletDto) {
-        Integer id = userService.addWallet(login, walletDto);
+       final var id = userService.addWallet(login, walletDto);
 
         // Build the self and related links
-        EntityModel<Integer> resource = EntityModel.of(
+        final var resource = EntityModel.of(
                 id,
                 linkTo(methodOn(this.getClass()).createWallet(login, walletDto)).withSelfRel(),
                 linkTo(methodOn(this.getClass()).getWallets(login)).withRel("all-wallets"),
@@ -91,7 +91,7 @@ public class UserController {
             @RequestParam(name = "end", required = false) String end) {
 
         final var dateRange = new DateRange(start, end);
-        List<Expense> expenses = userService.getExpenses(login, id, dateRange);
+        final var expenses = userService.getExpenses(login, id, dateRange);
 
         return ResponseEntity.ok(expenses);
     }
