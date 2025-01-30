@@ -8,6 +8,7 @@ import dev.kaly7.fingest.entities.DateRange;
 import dev.kaly7.fingest.entities.Expense;
 import jakarta.validation.Valid;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -30,4 +31,6 @@ public interface UserService {
     Integer addExpense(String login, Integer id, @Valid ExpenseInputDto expenseInputDto);
 
     void deleteExpense(String login, Integer walletId, Integer expenseId);
+
+    Map<String, BigDecimal> getCountedCategories(String login, Integer id, DateRange dateRange);
 }

@@ -15,7 +15,7 @@ public class Predicates {
     public static final Predicate<Expense> IS_NOT_PROFIT = IS_PROFIT.negate();
     static final Predicate<Expense> IS_NOT_TRANSFER = expense ->
             !TRANSFER_CATEGORY.equalsIgnoreCase(expense.getCategory().getName());
-    static final Predicate<Expense> IS_ELIGIBLE_EXPENSE = IS_NOT_TRANSFER.and(IS_NOT_PROFIT);
+    public static final Predicate<Expense> IS_ELIGIBLE_EXPENSE = IS_NOT_TRANSFER.and(IS_NOT_PROFIT);
 
     // Expense-specific predicates
     public static Predicate<Expense> isIn(DateRange dateRange) {

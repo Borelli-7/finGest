@@ -9,11 +9,13 @@ import dev.kaly7.fingest.entities.Expense;
 import dev.kaly7.fingest.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -147,6 +149,23 @@ public class UserController {
                                               @PathVariable Integer expenseId) {
         userService.deleteExpense(login, walletId, expenseId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{login}/wallets/{id}/counted-categories")
+    public ResponseEntity<EntityModel<Map<String, BigDecimal>>> getCountedCategories(@PathVariable String login,
+                                                                                     @PathVariable Integer id,
+                                                                                     @RequestParam(required = false) String start,
+                                                                                     @RequestParam(required = false) String end) {
+        final var dateRange = new DateRange(start, end);
+        final var countedCategories = userService.getCountedCategories(login, id, dateRange);
+
+        // Generate HATEOAS Links
+        var selfLink = linkTo(methodOn(UserController.class).getCountedCategories(login, id, start, end)).withSelfRel();
+        var walletsLink = linkTo(methodOn(UserController.class).getWallets(login)).withRel("wallets");
+        var expensesLink = linkTo(methodOn(UserController.class).getExpenses(login, id, start, end)).withRel("expenses");
+
+        final var response = EntityModel.of(countedCategories, selfLink, walletsLink, expensesLink);
+        return ResponseEntity.ok(response);
     }
 
 }

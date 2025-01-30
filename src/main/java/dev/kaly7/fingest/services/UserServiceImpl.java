@@ -21,13 +21,13 @@ import dev.kaly7.fingest.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
 
 import static dev.kaly7.fingest.common.validation.Predicates.containsExpenseWithId;
-import static java.util.stream.Collectors.partitioningBy;
-import static java.util.stream.Collectors.reducing;
+import static java.util.stream.Collectors.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -172,6 +172,18 @@ public class UserServiceImpl implements UserService {
                     return wallet;
                 })
                 .orElseThrow(() -> new UserNotFoundException("User not found with login: " + login));
+    }
+
+    @Override
+    public Map<String, BigDecimal> getCountedCategories(String login, Integer id, DateRange dateRange) {
+        return getExpenses(login, id, dateRange).stream()
+                .filter(Predicates.isIn(dateRange).and(Predicates.IS_ELIGIBLE_EXPENSE))
+                .collect(collectingAndThen(
+                        groupingBy(expense -> expense.getCategory().getName(),
+                                mapping(Expense::getAmount, reducing(Money.ZERO, Money::add))),
+                        result -> result.entrySet().stream()
+                                .collect(toMap(Map.Entry::getKey, e -> e.getValue().getAmount()))
+                ));
     }
 
 
