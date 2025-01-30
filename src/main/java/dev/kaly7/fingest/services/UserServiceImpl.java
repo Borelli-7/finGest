@@ -12,6 +12,7 @@ import dev.kaly7.fingest.entities.DateRange;
 import dev.kaly7.fingest.entities.Expense;
 import dev.kaly7.fingest.entities.Wallet;
 import dev.kaly7.fingest.entities.money.Money;
+import dev.kaly7.fingest.exceptions.ExpenseNotFoundException;
 import dev.kaly7.fingest.exceptions.WalletNotFoundException;
 import org.apache.commons.beanutils.PropertyUtils;
 import dev.kaly7.fingest.entities.User;
@@ -24,6 +25,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static dev.kaly7.fingest.common.validation.Predicates.containsExpenseWithId;
 import static java.util.stream.Collectors.partitioningBy;
 import static java.util.stream.Collectors.reducing;
 
@@ -150,6 +152,37 @@ public class UserServiceImpl implements UserService {
                             .orElseThrow(() -> new UserNotFoundException("User not found with login: " + login));
     }
 
+    @Override
+    public void deleteExpense(String login, Integer walletId, Integer expenseId) {
+        getUser(login)
+                .map(user -> walletId == 0 ? getWalletByExpenseId(expenseId, user) : getWallet(walletId, user))
+                .map(wallet -> {
+                    wallet.getExpenses()
+                            .stream()
+                            .filter(Predicates.hasId(expenseId))
+                            .findFirst()
+                            .ifPresentOrElse(
+                                    expense -> {
+                                        wallet.getExpenses().remove(expense);
+                                        wallet.setAmount(getNewAmountAfterExpenseDelete(expense, wallet));
+                                        walletRepo.save(wallet);
+                                    },
+                                    () -> { throw new ExpenseNotFoundException(expenseId); }
+                            );
+                    return wallet;
+                })
+                .orElseThrow(() -> new UserNotFoundException("User not found with login: " + login));
+    }
+
+
+    private Wallet getWalletByExpenseId(Integer expenseId, User user) {
+        return user.getWallets()
+                .stream()
+                .filter(Predicates.containsExpenseWithId(expenseId))
+                .findFirst()
+                .orElseThrow(() -> new ExpenseNotFoundException(expenseId));
+    }
+
     private Money getNewAmountAfterAdd(ExpenseInputDto expenseInputDto, Wallet wallet) {
         final var toAdd = expenseInputDto.amount();
         final var current = wallet.getAmount();
@@ -157,6 +190,15 @@ public class UserServiceImpl implements UserService {
         return expenseInputDto.category().getProfit()
                 ? current.add(toAdd)
                 : current.subtract(toAdd);
+    }
+
+    private Money getNewAmountAfterExpenseDelete(Expense toDelete, Wallet wallet) {
+        final var toSub = toDelete.getAmount();
+        final var current = wallet.getAmount();
+
+        return toDelete.getCategory().getProfit()
+                ? current.subtract(toSub)
+                : current.add(toSub);
     }
 
 

@@ -8,7 +8,6 @@ import dev.kaly7.fingest.entities.DateRange;
 import dev.kaly7.fingest.entities.Expense;
 import dev.kaly7.fingest.services.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -112,7 +111,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/{login}/wallets/{id}/expenses", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EntityModel<Map<String, Object>>> createExpense(
+    public ResponseEntity<EntityModel<LinkedHashMap<Object, Object>>> createExpense(
             @PathVariable String login,
             @PathVariable Integer id,
             @RequestBody @Valid ExpenseInputDto expense) {
@@ -131,7 +130,7 @@ public class UserController {
         responseBody.put("expenseId", expenseId);
 
         // Create links for hypermedia support
-        EntityModel<Map<String, Object>> resource = EntityModel.of(responseBody,
+        EntityModel<LinkedHashMap<Object, Object>> resource = EntityModel.of(responseBody,
                 linkTo(methodOn(this.getClass()).createExpense(login, id, expense)).withSelfRel(),
                 linkTo(methodOn(this.getClass()).getExpenses(login, id, null, null)).withRel("getExpenses"),
                 linkTo(methodOn(this.getClass()).deleteExpense(login, id, expenseId)).withRel("deleteExpense")
@@ -141,5 +140,13 @@ public class UserController {
         return ResponseEntity.created(location).body(resource);
     }
 
+    @CrossOrigin(origins = {"http://react-app:9091", "http://mobile-app:9092"})
+    @DeleteMapping("/{login}/wallets/{walletId}/expenses/{expenseId}")
+    public ResponseEntity<Void> deleteExpense(@PathVariable String login,
+                                              @PathVariable Integer walletId,
+                                              @PathVariable Integer expenseId) {
+        userService.deleteExpense(login, walletId, expenseId);
+        return ResponseEntity.noContent().build();
+    }
 
 }

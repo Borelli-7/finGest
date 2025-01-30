@@ -30,7 +30,7 @@ public class Predicates {
         return matchesCategoryOf(budget).and(isIn(budget.getDateRange()));
     }
 
-    static Predicate<Expense> hasId(Integer id) {
+    public static Predicate<Expense> hasId(Integer id) {
         return expense -> Objects.equals(expense.getId(), id);
     }
 
@@ -41,7 +41,7 @@ public class Predicates {
     }
 
     // Wallet-specific predicates
-    static Predicate<Wallet> containsExpenseWithId(Integer id) {
+    public static Predicate<Wallet> containsExpenseWithId(Integer id) {
         return wallet -> wallet.getExpenses().stream().anyMatch(hasId(id));
     }
 }
