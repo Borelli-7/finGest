@@ -26,7 +26,7 @@ public class Predicates {
         return expense -> Objects.equals(expense.getCategory(), budget.getCategory());
     }
 
-    static Predicate<Expense> isIncludedIn(Budget budget) {
+    public static Predicate<Expense> isIncludedIn(Budget budget) {
         return matchesCategoryOf(budget).and(isIn(budget.getDateRange()));
     }
 
@@ -35,7 +35,7 @@ public class Predicates {
     }
 
     // Budget-specific predicates
-    static Predicate<Budget> isIn(DateRange start, DateRange end) {
+    public static Predicate<Budget> isIn(DateRange start, DateRange end) {
         return budget -> start.containsDate(budget.getDateRange().getStart()) &&
                 end.containsDate(budget.getDateRange().getEnd());
     }

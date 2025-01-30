@@ -1,13 +1,11 @@
 package dev.kaly7.fingest.controllers;
 
-import dev.kaly7.fingest.dto.ExpenseInputDto;
-import dev.kaly7.fingest.dto.SummaryDto;
-import dev.kaly7.fingest.dto.UserDto;
-import dev.kaly7.fingest.dto.WalletDto;
+import dev.kaly7.fingest.dto.*;
 import dev.kaly7.fingest.entities.DateRange;
 import dev.kaly7.fingest.entities.Expense;
 import dev.kaly7.fingest.services.UserService;
 import jakarta.validation.Valid;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
@@ -167,5 +165,41 @@ public class UserController {
         final var response = EntityModel.of(countedCategories, selfLink, walletsLink, expensesLink);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping(value = "/{login}/budgets", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CollectionModel<EntityModel<BudgetOutputDto>>> getBudgets(
+            @PathVariable String login,
+            @RequestParam(name = "start_min", required = false) String startMin,
+            @RequestParam(name = "start_max", required = false) String startMax,
+            @RequestParam(name = "end_min", required = false) String endMin,
+            @RequestParam(name = "end_max", required = false) String endMax) {
+
+        final var startRange = new DateRange(startMin, startMax);
+        final var endRange = new DateRange(endMin, endMax);
+
+        List<BudgetOutputDto> budgets = userService.getBudgets(login, startRange, endRange);
+
+        List<EntityModel<BudgetOutputDto>> budgetResources = budgets.stream()
+                .map(budget -> EntityModel.of(budget,
+                        linkTo(methodOn(UserController.class)
+                                .getBudgets(login, startMin, startMax, endMin, endMax))
+                                .withSelfRel(),
+                        linkTo(methodOn(UserController.class)
+                                .getBudgetById(login, budget.id()))
+                                .withRel("budget-details")))
+                .toList();
+
+        final var response = CollectionModel.of(budgetResources,
+                linkTo(methodOn(UserController.class).getBudgets(login, startMin, startMax, endMin, endMax)).withSelfRel());
+
+        return ResponseEntity.ok(response);
+    }
+
+    //TODO: Implement this method
+    @GetMapping(value = "/{login}/budgets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    private Class<?> getBudgetById(String login, Integer id) {
+        return null;
+    }
+
 
 }

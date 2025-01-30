@@ -4,18 +4,12 @@ import dev.kaly7.fingest.common.validation.Predicates;
 import dev.kaly7.fingest.db.repositories.ExpenseRepo;
 import dev.kaly7.fingest.db.repositories.UserRepo;
 import dev.kaly7.fingest.db.repositories.WalletRepo;
-import dev.kaly7.fingest.dto.ExpenseInputDto;
-import dev.kaly7.fingest.dto.SummaryDto;
-import dev.kaly7.fingest.dto.UserDto;
-import dev.kaly7.fingest.dto.WalletDto;
-import dev.kaly7.fingest.entities.DateRange;
-import dev.kaly7.fingest.entities.Expense;
-import dev.kaly7.fingest.entities.Wallet;
+import dev.kaly7.fingest.dto.*;
+import dev.kaly7.fingest.entities.*;
 import dev.kaly7.fingest.entities.money.Money;
 import dev.kaly7.fingest.exceptions.ExpenseNotFoundException;
 import dev.kaly7.fingest.exceptions.WalletNotFoundException;
 import org.apache.commons.beanutils.PropertyUtils;
-import dev.kaly7.fingest.entities.User;
 import dev.kaly7.fingest.exceptions.UpdateFieldException;
 import dev.kaly7.fingest.exceptions.UserNotFoundException;
 import org.springframework.stereotype.Service;
@@ -186,6 +180,26 @@ public class UserServiceImpl implements UserService {
                 ));
     }
 
+    @Override
+    public List<BudgetOutputDto> getBudgets(String login, DateRange start, DateRange end) {
+        DateRange fullRange = new DateRange(start.getStart(), end.getEnd());
+
+        return getUser(login)
+                .map(user -> user.getBudgets().stream()
+                        .filter(Predicates.isIn(start, end))
+                        .map(budget -> BudgetOutputDto.fromBudget(budget,
+                                calculateCurrent(budget, getAllExpenses(user, fullRange))))
+                        .toList())
+                .orElseThrow(() -> new UserNotFoundException("User not found with login: " + login));
+    }
+
+    private Money calculateCurrent(Budget budget, List<Expense> expenses) {
+        return expenses
+                .stream()
+                .filter(Predicates.isIncludedIn(budget))
+                .map(Expense::getAmount)
+                .reduce(Money.ZERO, Money::add);
+    }
 
     private Wallet getWalletByExpenseId(Integer expenseId, User user) {
         return user.getWallets()

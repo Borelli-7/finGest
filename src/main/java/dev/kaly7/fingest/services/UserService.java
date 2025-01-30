@@ -1,9 +1,6 @@
 package dev.kaly7.fingest.services;
 
-import dev.kaly7.fingest.dto.ExpenseInputDto;
-import dev.kaly7.fingest.dto.SummaryDto;
-import dev.kaly7.fingest.dto.UserDto;
-import dev.kaly7.fingest.dto.WalletDto;
+import dev.kaly7.fingest.dto.*;
 import dev.kaly7.fingest.entities.DateRange;
 import dev.kaly7.fingest.entities.Expense;
 import jakarta.validation.Valid;
@@ -33,4 +30,6 @@ public interface UserService {
     void deleteExpense(String login, Integer walletId, Integer expenseId);
 
     Map<String, BigDecimal> getCountedCategories(String login, Integer id, DateRange dateRange);
+
+    List<BudgetOutputDto> getBudgets(String login, DateRange startRange, DateRange endRange);
 }
