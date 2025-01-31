@@ -8,6 +8,7 @@ import jakarta.persistence.Embeddable;
 import lombok.*;
 import java.time.LocalDate;
 
+@Getter
 @Embeddable
 @NoArgsConstructor
 @EqualsAndHashCode
@@ -53,14 +54,6 @@ public class DateRange {
 
     private static LocalDate defaultIfEmpty(String date, LocalDate defaultValue) {
         return (date == null || date.isBlank()) ? defaultValue : LocalDate.parse(date);
-    }
-
-    public LocalDate getStart() {
-        return start;
-    }
-
-    public LocalDate getEnd() {
-        return end;
     }
 
 }

@@ -2,6 +2,7 @@ spring:
   application:
     name: FinGest
 
+
   ########### DataBase Properties #################
   ### Postgresql database properties
   ## Database configuration
@@ -22,4 +23,5 @@ spring:
         format_sql: true
         use_sql_comments: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
+server:
+  port: 9090
