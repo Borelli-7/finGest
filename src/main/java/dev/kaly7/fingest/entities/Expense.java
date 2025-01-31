@@ -19,7 +19,7 @@ public class Expense {
     @Column(name = "id", updatable = false, nullable = false)
     private Integer id;
 
-    @Column(name = "message", nullable = false, length = 255)
+    @Column(name = "message", nullable = false)
     private String message;
 
     @Column(name = "date", nullable = false)

@@ -38,7 +38,7 @@
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<spring-boot.version>3.4.1</spring-boot.version>
+		<spring-boot.version>3.4.2</spring-boot.version>
 
 		<!-- Other Configuration -->
 		<lombok.version>1.18.36</lombok.version>

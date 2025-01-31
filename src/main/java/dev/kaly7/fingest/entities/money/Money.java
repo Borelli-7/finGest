@@ -6,10 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -49,7 +46,7 @@ public class Money implements Comparable<Money>, Serializable {
     }
 
     @Override
-    public int compareTo(Money other) {
+    public int compareTo(@NonNull Money other) {
         Objects.requireNonNull(other, "Other Money object must not be null");
         Money converted = other.convertTo(currency);
         return amount.compareTo(converted.amount);

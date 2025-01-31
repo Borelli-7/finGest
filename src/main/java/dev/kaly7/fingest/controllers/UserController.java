@@ -196,13 +196,13 @@ public class UserController {
     }
 
     @PostMapping(value = "/{login}/budgets", consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<EntityModel<Void>> createBudget(@PathVariable String login,
+    public ResponseEntity<EntityModel<Object>> createBudget(@PathVariable String login,
                                                           @Valid @RequestBody BudgetInputDto budget) {
         Integer budgetId = userService.addBudget(login, budget.toBudget());
 
         URI location = linkTo(methodOn(UserController.class).getBudgetById(login, budgetId)).toUri();
 
-        EntityModel<Void> response = EntityModel.of(null,
+        EntityModel<Object> response = EntityModel.of("Budget created successfully",
                 Link.of(location.toString(), "self"),
                 linkTo(methodOn(UserController.class).getBudgets(login, null, null, null, null)).withRel("all_budgets")
         );

@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static dev.kaly7.fingest.common.validation.Predicates.containsExpenseWithId;
 import static java.util.stream.Collectors.*;
 
 @Service
@@ -112,12 +111,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Expense> getExpenses(String login, Integer id, DateRange dateRange) {
 
-        return Optional.of(getUser(login).get())
-                .map(user -> switch (id) {
-                    case 0 -> getAllExpenses(user, dateRange);
-                    default -> getExpensesFromWallet(user, id, dateRange);
-                })
-                .orElseThrow(() -> new IllegalArgumentException("User not found for login: " + login));
+        return getUser(login)
+                .map(user -> {
+                    if (id == 0) {
+                        return getAllExpenses(user, dateRange);
+                    } else {
+                        return getExpensesFromWallet(user, id, dateRange);
+                    }
+                }).orElseThrow(() -> new IllegalArgumentException("User not found for login: " + login));
     }
 
     @Override
@@ -268,7 +269,7 @@ public class UserServiceImpl implements UserService {
 
     private  WalletDto getSummaryWallet(Optional<User> user) {
 
-        var totalAmount = Optional.ofNullable(user.get().getWallets())
+        final var totalAmount = user.map(User::getWallets)
                 .stream()
                 .flatMap(Collection::stream)
                 .map(Wallet::getAmount)
