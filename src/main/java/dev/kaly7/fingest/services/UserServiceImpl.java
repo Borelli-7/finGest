@@ -1,6 +1,7 @@
 package dev.kaly7.fingest.services;
 
 import dev.kaly7.fingest.common.validation.Predicates;
+import dev.kaly7.fingest.db.repositories.BudgetRepo;
 import dev.kaly7.fingest.db.repositories.ExpenseRepo;
 import dev.kaly7.fingest.db.repositories.UserRepo;
 import dev.kaly7.fingest.db.repositories.WalletRepo;
@@ -31,11 +32,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final WalletRepo walletRepo;
     private final ExpenseRepo expenseRepo;
+    private final BudgetRepo budgetRepo;
 
-    public UserServiceImpl(UserRepo userRepo, WalletRepo walletRepo, ExpenseRepo expenseRepo) {
+    public UserServiceImpl(UserRepo userRepo, WalletRepo walletRepo, ExpenseRepo expenseRepo, BudgetRepo budgetRepo) {
         this.userRepo = userRepo;
         this.walletRepo = walletRepo;
         this.expenseRepo = expenseRepo;
+        this.budgetRepo = budgetRepo;
     }
 
     @Override
@@ -192,6 +195,35 @@ public class UserServiceImpl implements UserService {
                         .toList())
                 .orElseThrow(() -> new UserNotFoundException("User not found with login: " + login));
     }
+
+    @Override
+    public Integer addBudget(String login, Budget budget) {
+        return getUser(login)
+                .map(user -> {
+                    user.getBudgets().add(budget);
+                    return budgetRepo.save(budget)
+                            .getId(); // Save budget and return ID
+                })
+                .map(id -> {
+                    getUser(login).ifPresent(userRepo::save); // Save the updated user if present
+                    return id;
+                })
+                .orElseThrow(() -> new UserNotFoundException(login)); // Handle missing user case
+    }
+
+    @Override
+    public BudgetOutputDto getBudgetById(String login, Integer id) {
+        return getUser(login)
+                .map(user -> user.getBudgets()
+                        .stream()
+                        .filter(budget -> Objects.equals(budget.getId(), id))
+                        .findFirst()
+                        .map(budget -> BudgetOutputDto.fromBudget(budget,
+                                calculateCurrent(budget, getAllExpenses(user, DateRange.withoutBounds()))))
+                        .orElseThrow(() -> new IllegalArgumentException("Budget not found with ID: " + id)))
+                .orElseThrow(() -> new UserNotFoundException("User not found with login: " + login));
+    }
+
 
     private Money calculateCurrent(Budget budget, List<Expense> expenses) {
         return expenses

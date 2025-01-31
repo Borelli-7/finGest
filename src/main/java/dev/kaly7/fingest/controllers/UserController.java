@@ -195,10 +195,33 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping(value = "/{login}/budgets", consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<EntityModel<Void>> createBudget(@PathVariable String login,
+                                                          @Valid @RequestBody BudgetInputDto budget) {
+        Integer budgetId = userService.addBudget(login, budget.toBudget());
+
+        URI location = linkTo(methodOn(UserController.class).getBudgetById(login, budgetId)).toUri();
+
+        EntityModel<Void> response = EntityModel.of(null,
+                Link.of(location.toString(), "self"),
+                linkTo(methodOn(UserController.class).getBudgets(login, null, null, null, null)).withRel("all_budgets")
+        );
+
+        return ResponseEntity.created(location).body(response);
+    }
+
+
     //TODO: Implement this method
     @GetMapping(value = "/{login}/budgets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    private Class<?> getBudgetById(String login, Integer id) {
-        return null;
+    public ResponseEntity<EntityModel<BudgetOutputDto>> getBudgetById(@PathVariable String login, @PathVariable Integer id) {
+        BudgetOutputDto budget = userService.getBudgetById(login, id);
+
+        EntityModel<BudgetOutputDto> resource = EntityModel.of(budget,
+                linkTo(methodOn(UserController.class).getBudgetById(login, id)).withSelfRel(),
+                linkTo(methodOn(UserController.class).getBudgets(login, null, null, null, null)).withRel("all_budgets")
+        );
+
+        return ResponseEntity.ok(resource);
     }
 
 

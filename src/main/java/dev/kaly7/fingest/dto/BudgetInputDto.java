@@ -7,12 +7,12 @@ import dev.kaly7.fingest.entities.money.Money;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-record BudgetInputDto(
+public record BudgetInputDto(
         @NotNull @Valid Category category,
         @NotNull @Valid Money total,
         @NotNull @Valid DateRange dateRange
 ) {
-    Budget toBudget() {
+    public Budget toBudget() {
         return Budget.builder()
                 .category(category)
                 .total(total)
