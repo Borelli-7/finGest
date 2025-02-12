@@ -28,6 +28,8 @@ public class UserServiceImpl implements UserService {
 
     private static final String SUMMARY_WALLET_NAME = "summary";
 
+    private static final String USER_NOT_FOUND_MESSAGE = "User not found with login: ";
+
     private final UserRepo userRepo;
     private final WalletRepo walletRepo;
     private final ExpenseRepo expenseRepo;

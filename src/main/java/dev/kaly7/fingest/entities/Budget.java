@@ -3,7 +3,6 @@ package dev.kaly7.fingest.entities;
 import dev.kaly7.fingest.entities.money.Money;
 import jakarta.persistence.*;
 import lombok.*;
-import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
@@ -11,7 +10,7 @@ import java.io.Serializable;
 @Builder
 @Entity
 @Table(name = "BUDGET")
-public class Budget implements Serializable {
+public class Budget {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,10 +18,9 @@ public class Budget implements Serializable {
     private Integer id;
 
     @ManyToOne(cascade = CascadeType.MERGE, optional = false)
-    @JoinColumns({
-            @JoinColumn(name = "category_name", referencedColumnName = "name", nullable = false),
-            @JoinColumn(name = "category_profit", referencedColumnName = "profit", nullable = false)
-    })
+
+    @JoinColumn(name = "category_name", referencedColumnName = "name", nullable = false)
+    @JoinColumn(name = "category_profit", referencedColumnName = "profit", nullable = false)
     private Category category;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -33,10 +31,8 @@ public class Budget implements Serializable {
     private Money total;
 
     @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "start", column = @Column(name = "start_date", nullable = false)),
-            @AttributeOverride(name = "end", column = @Column(name = "end_date", nullable = false))
-    })
+    @AttributeOverride(name = "start", column = @Column(name = "start_date", nullable = false))
+    @AttributeOverride(name = "end", column = @Column(name = "end_date", nullable = false))
     @NonNull
     private DateRange dateRange;
 }
