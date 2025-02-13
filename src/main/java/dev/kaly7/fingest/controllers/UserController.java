@@ -4,6 +4,8 @@ import dev.kaly7.fingest.dto.*;
 import dev.kaly7.fingest.entities.DateRange;
 import dev.kaly7.fingest.entities.Expense;
 import dev.kaly7.fingest.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -25,6 +27,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("resources/users")
+@Tag(name = "MyController", description = "API for my application")
 public class UserController {
 
     private final UserService userService;
@@ -33,6 +36,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Operation(summary = "Get a greeting message")
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public List<UserDto> getUsers() {
         return userService.getUsers();
