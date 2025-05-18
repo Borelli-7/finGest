@@ -24,6 +24,7 @@ public class Money implements Comparable<Money>, Serializable {
 
     private static final String DEFAULT_CURRENCY = "USD";
     public static final Money ZERO = new Money(BigDecimal.ZERO, DEFAULT_CURRENCY);
+    private static final String OTHER_NOT_NULL = "Other Money object must not be null";
 
     @NotNull
     @DecimalMin("0.00")
@@ -47,20 +48,20 @@ public class Money implements Comparable<Money>, Serializable {
 
     @Override
     public int compareTo(@NonNull Money other) {
-        Objects.requireNonNull(other, "Other Money object must not be null");
+        Objects.requireNonNull(other, OTHER_NOT_NULL);
         Money converted = other.convertTo(currency);
         return amount.compareTo(converted.amount);
     }
 
     public Money add(Money other) {
-        Objects.requireNonNull(other, "Other Money object must not be null");
+        Objects.requireNonNull(other, OTHER_NOT_NULL);
         Money converted = other.convertTo(currency);
         BigDecimal newAmount = amount.add(converted.amount);
         return new Money(newAmount, currency);
     }
 
     public Money subtract(Money other) {
-        Objects.requireNonNull(other, "Other Money object must not be null");
+        Objects.requireNonNull(other, OTHER_NOT_NULL);
         Money converted = other.convertTo(currency);
         BigDecimal newAmount = amount.subtract(converted.amount);
         return new Money(newAmount, currency);

@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -14,7 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Entity
 @Table(name = "saving")
-public class Saving implements Serializable {
+public class Saving {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,17 +28,13 @@ public class Saving implements Serializable {
     private byte[] icon;
 
     @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "amount", column = @Column(name = "total")),
-            @AttributeOverride(name = "currency", column = @Column(name = "total_currency"))
-    })
+    @AttributeOverride(name = "amount", column = @Column(name = "total"))
+    @AttributeOverride(name = "currency", column = @Column(name = "total_currency"))
     private Money total;
 
     @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "amount", column = @Column(name = "current")),
-            @AttributeOverride(name = "currency", column = @Column(name = "current_currency"))
-    })
+    @AttributeOverride(name = "amount", column = @Column(name = "current"))
+    @AttributeOverride(name = "currency", column = @Column(name = "current_currency"))
     private Money current;
 
     @Column(name = "start_date")
