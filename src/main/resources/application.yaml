@@ -2,12 +2,18 @@ spring:
   application:
     name: FinGest
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/fingest-realm
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
   ########### DataBase Properties #################
   ### Postgresql database properties
   ## Database configuration
   datasource:
-    url: jdbc:postgresql://localhost:5433/fingestdb
+    url: jdbc:postgresql://postgres:5432/fingestdb
     username: myuser
     password: secret
     driver-class-name: org.postgresql.Driver
@@ -25,3 +31,13 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 server:
   port: 9090
+
+# Keycloak client properties
+keycloak:
+  realm: fingest-realm
+  auth-server-url: http://localhost:8080
+  resource: fingest-client
+  credentials:
+    secret: ${KEYCLOAK_CLIENT_SECRET:change-me-in-production}
+  use-resource-role-mappings: true
+  bearer-only: true
