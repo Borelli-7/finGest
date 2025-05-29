@@ -1,0 +1,60 @@
+
+services:
+  # PostgreSQL database for the application
+  postgres:
+    image: postgres:16-alpine
+    container_name: fingest-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: fingestdb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - fingest-network
+
+  # Keycloak for authentication and authorization
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2.3
+    container_name: fingest-keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: localhost
+    ports:
+      - "8080:8080"
+    command: 
+      - start-dev
+    depends_on:
+      - postgres-keycloak
+    networks:
+      - fingest-network
+
+  # PostgreSQL database for Keycloak
+  postgres-keycloak:
+    image: postgres:16-alpine
+    container_name: keycloak-postgres
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - pgdata_keycloak:/var/lib/postgresql/data
+    networks:
+      - fingest-network
+
+networks:
+  fingest-network:
+    driver: bridge
+
+volumes:
+  pgdata:
+  pgdata_keycloak:
